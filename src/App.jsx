@@ -139,7 +139,7 @@ const TileAdhesiveTransition = ({ show }) => {
     <AnimatePresence>
       {show && (
         <motion.div
-          className="fixed inset-0 z-30 pointer-events-none overflow-hidden"
+          className="fixed inset-0 z-50 pointer-events-none overflow-hidden"
           initial="hidden"
           animate="sweep"
           exit="hidden"
@@ -149,6 +149,9 @@ const TileAdhesiveTransition = ({ show }) => {
           }}
           key="adhesive-overlay"
         >
+          {/* Uncomment the next line to test the overlay with a solid color */}
+          {/* <div className="absolute inset-0 bg-red-500/30" /> */}
+
           {/* Ribbed sweep layer */}
           <motion.div
             className="absolute inset-0"
@@ -214,7 +217,7 @@ export default function App() {
           }
         });
       },
-      { threshold: 0.5 } // 50% visible triggers change
+      { threshold: 0.5 }
     );
 
     sections.forEach((sec) => observer.observe(sec));
@@ -228,10 +231,19 @@ export default function App() {
       setShowTransition(true);
       const timer = setTimeout(() => {
         setShowTransition(false);
-      }, 1500); // total animation time matches the sweep + brightening
+      }, 1500); // total animation time matches sweep + brightening
       return () => clearTimeout(timer);
     }
   }, [activeSection]);
+
+  // Optional: trigger initial animation once when the page first loads
+  useEffect(() => {
+    const initTimer = setTimeout(() => {
+      setShowTransition(true);
+      setTimeout(() => setShowTransition(false), 1500);
+    }, 500); // delay after splash
+    return () => clearTimeout(initTimer);
+  }, []);
 
   return (
     <div className="bg-slate-900 text-white font-sans">
@@ -242,9 +254,6 @@ export default function App() {
       {!isLoading && (
         <>
           <WhatsAppButton />
-
-          {/* Tile adhesive transition overlay */}
-          <TileAdhesiveTransition show={showTransition} />
 
           {/* Main scroll container */}
           <main className="h-screen w-full overflow-y-auto snap-y snap-mandatory scroll-smooth bg-slate-900">
@@ -373,6 +382,9 @@ export default function App() {
               </div>
             </section>
           </main>
+
+          {/* Overlay placed AFTER main to ensure it's on top */}
+          <TileAdhesiveTransition show={showTransition} />
 
           {/* --- LIGHTBOX FOR TOWN GALLERY --- */}
           <AnimatePresence>
