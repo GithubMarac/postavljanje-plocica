@@ -1,11 +1,52 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Ruler, Hammer, Droplets, Phone, CheckCircle2, Mail, MapPin } from 'lucide-react';
+import { Ruler, Hammer, Droplets, X, ChevronLeft, ChevronRight } from 'lucide-react';
 
-// --- MOSAIC SPLASH SCREEN COMPONENT ---
+// --- PLACEHOLDER TOWN DATA (replace with real images) ---
+const towns = [
+  {
+    name: 'Zagreb',
+    images: [
+      'https://images.unsplash.com/photo-1600585152220-90363fe7e115?w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1600573472550-8090b5e0745e?w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1600566752447-f0fd8b3aed07?w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1600047509358-9dc75507daeb?w=800&auto=format&fit=crop',
+    ],
+  },
+  {
+    name: 'Split',
+    images: [
+      'https://images.unsplash.com/photo-1560185007-5f0bb1866cab?w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1560185007-cde436f6a4d0?w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1560184993-26c1f3e0bc1e?w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1560184897-502f8e9c6a2f?w=800&auto=format&fit=crop',
+    ],
+  },
+  {
+    name: 'Rijeka',
+    images: [
+      'https://images.unsplash.com/photo-1598928506311-c55e8b3b3b0e?w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1598928506311-0f3f4b3b3b0e?w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1598928506311-5f3f4b3b3b0e?w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1598928506311-8b3b3b3b0e?w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1598928506311-9b3b3b3b0e?w=800&auto=format&fit=crop',
+    ],
+  },
+  {
+    name: 'Osijek',
+    images: [
+      'https://images.unsplash.com/photo-1580587771525-78b9b9b9b9b9?w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1580587771525-78b9b9b9b9b9?w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1580587771525-78b9b9b9b9b9?w=800&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1580587771525-78b9b9b9b9b9?w=800&auto=format&fit=crop',
+    ],
+  },
+];
+
+// --- MOSAIC SPLASH SCREEN ---
 const MosaicSplash = ({ onComplete }) => {
-  const gridItems = Array.from({ length: 25 }); // 5x5 grid
-
+  const gridItems = Array.from({ length: 25 });
   useEffect(() => {
     const timer = setTimeout(() => onComplete(), 2500);
     return () => clearTimeout(timer);
@@ -22,11 +63,7 @@ const MosaicSplash = ({ onComplete }) => {
           key={i}
           initial={{ opacity: 1, scale: 1 }}
           animate={{ opacity: 0, scale: 0.8 }}
-          transition={{
-            duration: 0.8,
-            delay: Math.random() * 1.5,
-            ease: 'easeInOut',
-          }}
+          transition={{ duration: 0.8, delay: Math.random() * 1.5, ease: 'easeInOut' }}
           className="w-1/5 h-1/5 bg-slate-800 border border-slate-700"
         />
       ))}
@@ -44,23 +81,15 @@ const MosaicSplash = ({ onComplete }) => {
   );
 };
 
-// --- WHATSAPP FLOATING BUTTON (fixed SVG) ---
+// --- WHATSAPP FLOATING BUTTON ---
 const WhatsAppButton = () => (
   <a
-    href="https://wa.me/385912345678" // Ovdje unesi svoj broj
+    href="https://wa.me/385912345678"
     target="_blank"
     rel="noopener noreferrer"
-    className="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center justify-center group"
+    className="fixed bottom-6 right-6 z-40 bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center justify-center group"
   >
-    <svg
-      viewBox="0 0 24 24"
-      width="28"
-      height="28"
-      stroke="none"
-      strokeWidth="0"
-      fill="currentColor"
-      className="text-white"
-    >
+    <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" className="text-white">
       <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
     </svg>
     <span className="absolute right-16 bg-slate-900 text-white text-sm px-3 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
@@ -69,22 +98,143 @@ const WhatsAppButton = () => (
   </a>
 );
 
-// --- MAIN PAGE COMPONENT ---
+// --- SWIPEABLE IMAGE FOR LIGHTBOX ---
+const SwipeableImage = ({ src, onPrev, onNext }) => {
+  const x = useMotionValue(0);
+
+  const handleDragEnd = (_, info) => {
+    const threshold = 100;
+    if (info.offset.x > threshold) {
+      onPrev();
+    } else if (info.offset.x < -threshold) {
+      onNext();
+    }
+  };
+
+  return (
+    <motion.div
+      className="w-full h-full flex items-center justify-center"
+      drag="x"
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={0.2}
+      onDragEnd={handleDragEnd}
+      style={{ x }}
+    >
+      <motion.img
+        src={src}
+        alt=""
+        className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3 }}
+      />
+    </motion.div>
+  );
+};
+
+// --- TILE ADHESIVE TRANSITION OVERLAY (animated on section change) ---
+const TileAdhesiveTransition = ({ show }) => {
+  return (
+    <AnimatePresence>
+      {show && (
+        <motion.div
+          className="fixed inset-0 z-30 pointer-events-none overflow-hidden"
+          initial="hidden"
+          animate="sweep"
+          exit="hidden"
+          variants={{
+            hidden: { opacity: 0 },
+            sweep: { opacity: 1, transition: { staggerChildren: 0.1 } },
+          }}
+          key="adhesive-overlay"
+        >
+          {/* Ribbed sweep layer */}
+          <motion.div
+            className="absolute inset-0"
+            style={{
+              background: `repeating-linear-gradient(
+                to right,
+                rgba(255,255,255,0.5),
+                rgba(255,255,255,0.5) 2px,
+                transparent 2px,
+                transparent 6px
+              )`,
+            }}
+            variants={{
+              hidden: { clipPath: 'inset(0 100% 0 0)' },
+              sweep: {
+                clipPath: 'inset(0 0% 0 0)',
+                transition: { duration: 0.7, ease: 'easeInOut' },
+              },
+            }}
+          />
+          {/* Brightening (drying) layer */}
+          <motion.div
+            className="absolute inset-0 bg-white"
+            variants={{
+              hidden: { opacity: 0 },
+              sweep: {
+                opacity: [0, 0.25, 0],
+                transition: { duration: 0.8, times: [0, 0.6, 1], ease: 'easeInOut' },
+              },
+            }}
+          />
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
+
+// --- MAIN APP ---
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedTown, setSelectedTown] = useState(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [activeSection, setActiveSection] = useState(0);
+  const [showTransition, setShowTransition] = useState(false);
+  const prevSectionRef = useRef(0);
 
-  // Stabilan callback za splash screen
-  const handleSplashComplete = useCallback(() => {
-    setIsLoading(false);
-  }, []);
+  const handleSplashComplete = useCallback(() => setIsLoading(false), []);
 
   const fadeUp = {
     hidden: { opacity: 0, y: 40 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
   };
 
+  // Track which section is mostly visible
+  useEffect(() => {
+    const sections = document.querySelectorAll('[data-section]');
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = Number(entry.target.dataset.section);
+            setActiveSection(index);
+          }
+        });
+      },
+      { threshold: 0.5 } // 50% visible triggers change
+    );
+
+    sections.forEach((sec) => observer.observe(sec));
+    return () => observer.disconnect();
+  }, []);
+
+  // When activeSection changes, trigger the adhesive transition
+  useEffect(() => {
+    if (activeSection !== prevSectionRef.current) {
+      prevSectionRef.current = activeSection;
+      setShowTransition(true);
+      const timer = setTimeout(() => {
+        setShowTransition(false);
+      }, 1500); // total animation time matches the sweep + brightening
+      return () => clearTimeout(timer);
+    }
+  }, [activeSection]);
+
   return (
-    <div className="bg-slate-50 text-slate-800 font-sans">
+    <div className="bg-slate-900 text-white font-sans">
       <AnimatePresence>
         {isLoading && <MosaicSplash onComplete={handleSplashComplete} />}
       </AnimatePresence>
@@ -93,41 +243,35 @@ export default function App() {
         <>
           <WhatsAppButton />
 
-          {/* SCROLL SNAP KONTEJNER */}
-          <main className="h-screen w-full overflow-y-auto snap-y snap-mandatory scroll-smooth">
-            {/* 1. SEKCIJA: O MENI */}
-            <section className="h-screen w-full snap-start relative flex flex-col items-center justify-center bg-slate-900 text-white overflow-hidden px-4">
+          {/* Tile adhesive transition overlay */}
+          <TileAdhesiveTransition show={showTransition} />
+
+          {/* Main scroll container */}
+          <main className="h-screen w-full overflow-y-auto snap-y snap-mandatory scroll-smooth bg-slate-900">
+            {/* 1. O MENI (Hero) */}
+            <section
+              data-section="0"
+              className="h-screen w-full snap-start relative flex flex-col items-center justify-center bg-slate-900 overflow-hidden px-4"
+            >
               <div className="absolute inset-0 opacity-30 bg-[url('https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=2000&auto=format&fit=crop')] bg-cover bg-center" />
               <div className="relative z-10 text-center max-w-5xl mx-auto">
-                <motion.h1
-                  variants={fadeUp}
-                  initial="hidden"
-                  whileInView="visible"
-                  className="text-4xl md:text-6xl font-extrabold mb-6"
-                >
+                <motion.h1 variants={fadeUp} initial="hidden" whileInView="visible" className="text-4xl md:text-6xl font-extrabold mb-6">
                   Vrhunska <span className="text-amber-500">Keramika Zagreb</span>
                 </motion.h1>
-                <motion.p
-                  variants={fadeUp}
-                  initial="hidden"
-                  whileInView="visible"
-                  className="text-lg md:text-xl mb-12 text-slate-300 max-w-2xl mx-auto"
-                >
-                  S dugogodišnjim iskustvom specijalizirani smo za postavljanje svih vrsta keramike,
-                  porculana i mozaika. Svakom projektu pristupamo s maksimalnom pažnjom.
+                <motion.p variants={fadeUp} initial="hidden" whileInView="visible" className="text-lg md:text-xl mb-12 text-slate-300 max-w-2xl mx-auto">
+                  S dugogodišnjim iskustvom specijalizirani smo za postavljanje svih vrsta keramike, porculana i mozaika. Svakom projektu pristupamo s maksimalnom pažnjom.
                 </motion.p>
-
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {[
                     { icon: <Ruler size={32} />, title: 'Preciznost', desc: 'Laserska nivelacija' },
                     { icon: <Hammer size={32} />, title: 'Kvaliteta', desc: 'Vrhunski materijali' },
                     { icon: <Droplets size={32} />, title: 'Zaštita', desc: 'Hidroizolacija' },
-                  ].map((item, index) => (
+                  ].map((item, idx) => (
                     <motion.div
-                      key={index}
+                      key={idx}
                       initial={{ opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.2 }}
+                      transition={{ delay: idx * 0.2 }}
                       className="bg-slate-800/80 backdrop-blur-sm p-6 rounded-2xl border border-slate-700"
                     >
                       <div className="text-amber-500 flex justify-center mb-3">{item.icon}</div>
@@ -139,29 +283,49 @@ export default function App() {
               </div>
             </section>
 
-            {/* 2. SEKCIJA: MOJI RADOVI */}
-            <section className="h-screen w-full snap-start flex flex-col items-center justify-center bg-slate-50 px-4 py-12">
+            {/* 2. MOJI RADOVI (Gallery) */}
+            <section
+              data-section="1"
+              className="min-h-screen w-full snap-start flex flex-col justify-center bg-slate-900 px-4 py-12"
+            >
               <div className="max-w-6xl w-full mx-auto">
-                <motion.div initial="hidden" whileInView="visible" variants={fadeUp} className="text-center mb-10">
-                  <h2 className="text-3xl md:text-5xl font-bold text-slate-900">Moji Radovi</h2>
-                  <p className="text-slate-500 mt-2">Galerija nedavnih projekata</p>
+                <motion.div initial="hidden" whileInView="visible" variants={fadeUp} className="text-center mb-12">
+                  <h2 className="text-3xl md:text-5xl font-bold">Moji Radovi</h2>
+                  <p className="text-slate-400 mt-2">Odaberite grad za pregled projekata</p>
                 </motion.div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-                  {[1, 2, 3, 4, 5, 6, 7, 8].map((item, index) => (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                  {towns.map((town, townIndex) => (
                     <motion.div
-                      key={index}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: index * 0.1 }}
-                      className="aspect-square bg-slate-200 rounded-xl overflow-hidden relative group shadow-sm"
+                      key={town.name}
+                      initial={{ opacity: 0, y: 30 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ delay: townIndex * 0.15 }}
+                      whileHover={{ scale: 1.02 }}
+                      onClick={() => {
+                        setSelectedTown(townIndex);
+                        setCurrentIndex(0);
+                      }}
+                      className="cursor-pointer group relative h-80 rounded-2xl overflow-hidden shadow-lg"
                     >
-                      {/* Ovdje ubacite prave slike sa src="..." unutar img taga */}
-                      <div className="absolute inset-0 bg-slate-300 flex items-center justify-center text-slate-500">
-                        Slika {item}
+                      <div className="absolute inset-0">
+                        {town.images.slice(0, 4).map((img, imgIdx) => (
+                          <div
+                            key={imgIdx}
+                            className="absolute w-full h-full bg-cover bg-center rounded-2xl transition-all duration-300 group-hover:shadow-2xl"
+                            style={{
+                              backgroundImage: `url(${img})`,
+                              zIndex: 4 - imgIdx,
+                              transform: `rotate(${imgIdx % 2 === 0 ? -2 : 2}deg) translate(${imgIdx * 4}px, ${imgIdx * 4}px)`,
+                              opacity: imgIdx === 0 ? 1 : 0.9 - imgIdx * 0.1,
+                              border: '2px solid rgba(255,255,255,0.15)',
+                            }}
+                          />
+                        ))}
                       </div>
-                      <div className="absolute inset-0 bg-amber-500/90 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
-                        <span className="font-bold text-white text-lg tracking-wide">Povećaj</span>
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent p-5 z-10">
+                        <h3 className="text-2xl font-bold text-white">{town.name}</h3>
+                        <p className="text-sm text-slate-300">{town.images.length} projekata</p>
                       </div>
                     </motion.div>
                   ))}
@@ -169,19 +333,16 @@ export default function App() {
               </div>
             </section>
 
-            {/* 3. SEKCIJA: CJENIK (completed) */}
-            <section className="h-screen w-full snap-start flex flex-col items-center justify-center bg-slate-900 text-white px-4">
+            {/* 3. CJENIK */}
+            <section
+              data-section="2"
+              className="h-screen w-full snap-start flex flex-col items-center justify-center bg-slate-900 px-4"
+            >
               <div className="max-w-4xl w-full mx-auto">
-                <motion.div
-                  initial="hidden"
-                  whileInView="visible"
-                  variants={fadeUp}
-                  className="text-center mb-12"
-                >
+                <motion.div initial="hidden" whileInView="visible" variants={fadeUp} className="text-center mb-12">
                   <h2 className="text-3xl md:text-5xl font-bold mb-4">Cjenik</h2>
                   <p className="text-slate-300">Transparentne cijene – bez skrivenih troškova</p>
                 </motion.div>
-
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {[
                     { service: 'Keramika (m²)', price: 'od 12 €', desc: 'standardne pločice' },
@@ -201,7 +362,6 @@ export default function App() {
                     </motion.div>
                   ))}
                 </div>
-
                 <motion.p
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
@@ -213,6 +373,68 @@ export default function App() {
               </div>
             </section>
           </main>
+
+          {/* --- LIGHTBOX FOR TOWN GALLERY --- */}
+          <AnimatePresence>
+            {selectedTown !== null && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
+                onClick={() => setSelectedTown(null)}
+              >
+                <button
+                  onClick={() => setSelectedTown(null)}
+                  className="absolute top-6 right-6 z-50 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                >
+                  <X size={32} className="text-white" />
+                </button>
+
+                {towns[selectedTown].images.length > 1 && (
+                  <>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCurrentIndex((prev) => (prev === 0 ? towns[selectedTown].images.length - 1 : prev - 1));
+                      }}
+                      className="absolute left-4 z-50 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                    >
+                      <ChevronLeft size={40} className="text-white" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCurrentIndex((prev) => (prev === towns[selectedTown].images.length - 1 ? 0 : prev + 1));
+                      }}
+                      className="absolute right-4 z-50 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                    >
+                      <ChevronRight size={40} className="text-white" />
+                    </button>
+                  </>
+                )}
+
+                <div className="w-full h-full flex items-center justify-center p-8" onClick={(e) => e.stopPropagation()}>
+                  <AnimatePresence mode="wait">
+                    <SwipeableImage
+                      key={currentIndex}
+                      src={towns[selectedTown].images[currentIndex]}
+                      onPrev={() =>
+                        setCurrentIndex((prev) => (prev === 0 ? towns[selectedTown].images.length - 1 : prev - 1))
+                      }
+                      onNext={() =>
+                        setCurrentIndex((prev) => (prev === towns[selectedTown].images.length - 1 ? 0 : prev + 1))
+                      }
+                    />
+                  </AnimatePresence>
+                </div>
+
+                <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 text-white/70 text-sm">
+                  {currentIndex + 1} / {towns[selectedTown].images.length}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </>
       )}
     </div>
