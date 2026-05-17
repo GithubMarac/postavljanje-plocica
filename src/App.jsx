@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue } from 'framer-motion';
 import { Ruler, Hammer, Droplets, X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 // --- PLACEHOLDER TOWN DATA (replace with your own images) ---
@@ -249,15 +249,44 @@ export default function App() {
             {/* 1. O MENI (Hero) */}
             <section
               data-section="0"
-              className="h-screen w-full snap-start relative flex flex-col items-center justify-center bg-slate-900 overflow-hidden px-4"
+              className="h-screen w-full snap-start relative flex flex-col items-center justify-center bg-slate-900 overflow-hidden"
             >
-              <div className="absolute inset-0 opacity-30 bg-[url('https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=2000&auto=format&fit=crop')] bg-cover bg-center" />
-              <div className="relative z-10 text-center max-w-5xl mx-auto">
-                <motion.h1 variants={fadeUp} initial="hidden" whileInView="visible" className="text-4xl md:text-6xl font-extrabold mb-6">
-                  Vrhunska <span className="text-amber-500">Keramika Zagreb</span>
+              {/* Diploma background image */}
+              <div
+                className="absolute inset-0 opacity-20"
+                style={{
+                  backgroundImage: 'url(https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=1000&auto=format&fit=crop)',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }}
+              />
+
+              {/* Profile picture in corner (top right) */}
+              <div className="absolute top-6 right-6 w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-4 border-amber-500 shadow-xl z-20">
+                <img
+                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face"
+                  alt="Goran"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              <div className="relative z-10 text-center max-w-2xl mx-auto px-4">
+                <motion.h1
+                  variants={fadeUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  className="text-4xl md:text-6xl font-extrabold mb-8"
+                >
+                  O meni
                 </motion.h1>
-                <motion.p variants={fadeUp} initial="hidden" whileInView="visible" className="text-lg md:text-xl mb-12 text-slate-300 max-w-2xl mx-auto">
-                  S dugogodišnjim iskustvom specijalizirani smo za postavljanje svih vrsta keramike, porculana i mozaika. Svakom projektu pristupamo s maksimalnom pažnjom.
+                <motion.p
+                  variants={fadeUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  className="text-xl md:text-2xl text-slate-300 leading-relaxed"
+                >
+                  Zovem se Goran, bavim se keramikom i imam pet godina iskustva. Svaki projekt radim s velikom
+                  pažnjom i preciznošću, koristeći vrhunske materijale.
                 </motion.p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {[
