@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Ruler, Hammer, Droplets, X, ChevronLeft, ChevronRight } from 'lucide-react';
 
-// --- PLACEHOLDER TOWN DATA (replace with real images) ---
+// --- PLACEHOLDER TOWN DATA (replace with your own images) ---
 const towns = [
   {
     name: 'Zagreb',
@@ -98,17 +98,12 @@ const WhatsAppButton = () => (
   </a>
 );
 
-// --- SWIPEABLE IMAGE FOR LIGHTBOX ---
+// --- SWIPEABLE IMAGE (LIGHTBOX) ---
 const SwipeableImage = ({ src, onPrev, onNext }) => {
   const x = useMotionValue(0);
-
   const handleDragEnd = (_, info) => {
-    const threshold = 100;
-    if (info.offset.x > threshold) {
-      onPrev();
-    } else if (info.offset.x < -threshold) {
-      onNext();
-    }
+    if (info.offset.x > 100) onPrev();
+    else if (info.offset.x < -100) onNext();
   };
 
   return (
@@ -133,7 +128,7 @@ const SwipeableImage = ({ src, onPrev, onNext }) => {
   );
 };
 
-// --- TILE ADHESIVE TRANSITION OVERLAY (animated on section change) ---
+// --- TILE ADHESIVE TRANSITION OVERLAY (no debug, clean) ---
 const TileAdhesiveTransition = ({ show }) => {
   return (
     <AnimatePresence>
@@ -149,17 +144,14 @@ const TileAdhesiveTransition = ({ show }) => {
           }}
           key="adhesive-overlay"
         >
-          {/* Uncomment the next line to test the overlay with a solid color */}
-          {/* <div className="absolute inset-0 bg-red-500/30" /> */}
-
-          {/* Ribbed sweep layer */}
+          {/* Ribbed sweep (trowel ridges) */}
           <motion.div
             className="absolute inset-0"
             style={{
               background: `repeating-linear-gradient(
                 to right,
-                rgba(255,255,255,0.5),
-                rgba(255,255,255,0.5) 2px,
+                rgba(255,255,255,0.4),
+                rgba(255,255,255,0.4) 2px,
                 transparent 2px,
                 transparent 6px
               )`,
@@ -168,18 +160,18 @@ const TileAdhesiveTransition = ({ show }) => {
               hidden: { clipPath: 'inset(0 100% 0 0)' },
               sweep: {
                 clipPath: 'inset(0 0% 0 0)',
-                transition: { duration: 0.7, ease: 'easeInOut' },
+                transition: { duration: 0.6, ease: 'easeInOut' },
               },
             }}
           />
-          {/* Brightening (drying) layer */}
+          {/* Drying / brightening flash */}
           <motion.div
             className="absolute inset-0 bg-white"
             variants={{
               hidden: { opacity: 0 },
               sweep: {
-                opacity: [0, 0.25, 0],
-                transition: { duration: 0.8, times: [0, 0.6, 1], ease: 'easeInOut' },
+                opacity: [0, 0.2, 0],
+                transition: { duration: 0.7, times: [0, 0.5, 1], ease: 'easeInOut' },
               },
             }}
           />
@@ -205,7 +197,7 @@ export default function App() {
     visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
   };
 
-  // Track which section is mostly visible
+  // Detect which section is currently visible (snap‑scroll) ------------------
   useEffect(() => {
     const sections = document.querySelectorAll('[data-section]');
     const observer = new IntersectionObserver(
@@ -224,24 +216,22 @@ export default function App() {
     return () => observer.disconnect();
   }, []);
 
-  // When activeSection changes, trigger the adhesive transition
+  // When section changes, trigger the overlay for 1.5 seconds ----------------
   useEffect(() => {
     if (activeSection !== prevSectionRef.current) {
       prevSectionRef.current = activeSection;
       setShowTransition(true);
-      const timer = setTimeout(() => {
-        setShowTransition(false);
-      }, 1500); // total animation time matches sweep + brightening
+      const timer = setTimeout(() => setShowTransition(false), 1500);
       return () => clearTimeout(timer);
     }
   }, [activeSection]);
 
-  // Optional: trigger initial animation once when the page first loads
+  // Show one animation right after the splash screen -------------------------
   useEffect(() => {
     const initTimer = setTimeout(() => {
       setShowTransition(true);
       setTimeout(() => setShowTransition(false), 1500);
-    }, 500); // delay after splash
+    }, 600);
     return () => clearTimeout(initTimer);
   }, []);
 
@@ -255,7 +245,6 @@ export default function App() {
         <>
           <WhatsAppButton />
 
-          {/* Main scroll container */}
           <main className="h-screen w-full overflow-y-auto snap-y snap-mandatory scroll-smooth bg-slate-900">
             {/* 1. O MENI (Hero) */}
             <section
@@ -292,7 +281,7 @@ export default function App() {
               </div>
             </section>
 
-            {/* 2. MOJI RADOVI (Gallery) */}
+            {/* 2. MOJI RADOVI */}
             <section
               data-section="1"
               className="min-h-screen w-full snap-start flex flex-col justify-center bg-slate-900 px-4 py-12"
@@ -383,10 +372,10 @@ export default function App() {
             </section>
           </main>
 
-          {/* Overlay placed AFTER main to ensure it's on top */}
+          {/* ======= SECTION TRANSITION OVERLAY (above everything) ======= */}
           <TileAdhesiveTransition show={showTransition} />
 
-          {/* --- LIGHTBOX FOR TOWN GALLERY --- */}
+          {/* --- LIGHTBOX (town gallery) --- */}
           <AnimatePresence>
             {selectedTown !== null && (
               <motion.div
