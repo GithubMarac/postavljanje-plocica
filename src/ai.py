@@ -316,7 +316,12 @@ def make_gradient(w, h, top_color, bot_color):
         gradient[y] = (top * (1 - t) + bot * t).astype(np.uint8)
     return Image.fromarray(gradient, "RGB")
 
+def strip_emoji(text: str) -> str:
+    """Drop characters PIL's Latin-1 fonts cannot render (emoji, symbols)."""
+    return "".join(c for c in text if ord(c) < 0x2500)
+
 def draw_wrapped_text(draw, text, font, x, y, max_w, fill, line_spacing=1.35):
+    text = strip_emoji(text).strip()   # sanitise before any font.getbbox() call
     words = text.split()
     lines, line = [], []
     for w in words:
