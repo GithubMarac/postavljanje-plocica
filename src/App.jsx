@@ -190,12 +190,24 @@ export default function App() {
   const [showTransition, setShowTransition] = useState(false);
   const prevSectionRef = useRef(0);
 
+  // New state for diploma modal
+  const [isDiplomaOpen, setIsDiplomaOpen] = useState(false);
+
   const handleSplashComplete = useCallback(() => setIsLoading(false), []);
 
   const fadeUp = {
     hidden: { opacity: 0, y: 40 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
   };
+
+  // Close diploma modal on Escape key
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === 'Escape') setIsDiplomaOpen(false);
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, []);
 
   // Detect which section is currently visible (snap‑scroll) ------------------
   useEffect(() => {
@@ -246,49 +258,48 @@ export default function App() {
           <WhatsAppButton />
 
           <main className="h-screen w-full overflow-y-auto snap-y snap-mandatory scroll-smooth bg-slate-900">
-            {/* 1. O MENI (Hero) */}
+            {/* 1. O MENI (Hero) – Split layout */}
             <section
               data-section="0"
-              className="h-screen w-full snap-start relative flex flex-col items-center justify-center bg-slate-900 overflow-hidden"
+              className="h-screen w-full snap-start relative flex items-center justify-center bg-slate-900 overflow-hidden"
             >
               {/* Diploma background image */}
               <div
                 className="absolute inset-0 opacity-20"
                 style={{
-                  backgroundImage: 'url(https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=1000&auto=format&fit=crop)',
+                  backgroundImage: 'url(/pngtree-close.png)',
                   backgroundSize: 'cover',
                   backgroundPosition: 'center',
+                  backgroundRepeat: 'repeat'
                 }}
               />
 
-              {/* Profile picture in corner (top right) */}
-              <div className="absolute top-6 right-6 w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-4 border-amber-500 shadow-xl z-20">
-                <img
-                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face"
-                  alt="Goran"
-                  className="w-full h-full object-cover"
-                />
-              </div>
+              
 
-              <div className="relative z-10 text-center max-w-2xl mx-auto px-4">
-                <motion.h1
-                  variants={fadeUp}
-                  initial="hidden"
-                  whileInView="visible"
-                  className="text-4xl md:text-6xl font-extrabold mb-8"
+              {/* Split content container */}
+              <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-8 px-4">
+                {/* Left div – Profile picture */}
+                <motion.div
+                  initial={{ opacity: 0, x: -50 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8 }}
+                  className="flex-shrink-0 w-48 h-48 md:w-64 md:h-64 lg:w-80 lg:h-80 rounded-full overflow-hidden border-4 border-amber-500 shadow-2xl"
                 >
-                  O meni
-                </motion.h1>
-                <motion.p
-                  variants={fadeUp}
-                  initial="hidden"
-                  whileInView="visible"
-                  className="text-xl md:text-2xl text-slate-300 leading-relaxed"
+                  <img
+                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face"
+                    alt="Goran"
+                    className="w-full h-full object-cover"
+                  />
+                </motion.div>
+
+                {/* Right div – Text content */}
+                <motion.div
+                  initial={{ opacity: 0, x: 50 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
+                  className="text-center md:text-left max-w-xl"
                 >
-                  Zovem se Goran, bavim se keramikom i imam pet godina iskustva. Svaki projekt radim s velikom
-                  pažnjom i preciznošću, koristeći vrhunske materijale.
-                </motion.p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-3 md:grid-cols-3 gap-6">
                   {[
                     { icon: <Ruler size={32} />, title: 'Preciznost', desc: 'Laserska nivelacija' },
                     { icon: <Hammer size={32} />, title: 'Kvaliteta', desc: 'Vrhunski materijali' },
@@ -307,6 +318,20 @@ export default function App() {
                     </motion.div>
                   ))}
                 </div>
+                  
+                  {/* Clickable diploma image */}
+                  <div 
+                    className="cursor-pointer inline-block"
+                    onClick={() => setIsDiplomaOpen(true)}
+                  >
+                    <img 
+                      src="../diploma.jpg" 
+                      style={{ height: '350px', margin: 'auto', padding: '15px' }} 
+                      alt="Moja diploma – kliknite za uvećanje"
+                      className="rounded-lg shadow-lg hover:opacity-90 transition-opacity"
+                    />
+                  </div>
+                </motion.div>
               </div>
             </section>
 
@@ -462,6 +487,36 @@ export default function App() {
                 <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 text-white/70 text-sm">
                   {currentIndex + 1} / {towns[selectedTown].images.length}
                 </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* ======= DIPLOMA MODAL (expandable image) ======= */}
+          <AnimatePresence>
+            {isDiplomaOpen && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+                onClick={() => setIsDiplomaOpen(false)}
+              >
+                {/* Close button */}
+                <button
+                  onClick={() => setIsDiplomaOpen(false)}
+                  className="absolute top-6 right-6 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                  aria-label="Zatvori diplomu"
+                >
+                  <X size={32} className="text-white" />
+                </button>
+
+                {/* Enlarged diploma image */}
+                <img
+                  src="../diploma.jpg"
+                  alt="Diploma uvećano"
+                  className="max-h-[90vh] max-w-[90vw] object-contain rounded-lg shadow-2xl"
+                  onClick={(e) => e.stopPropagation()}
+                />
               </motion.div>
             )}
           </AnimatePresence>

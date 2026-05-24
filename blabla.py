@@ -307,7 +307,7 @@ for i in l:
         num_layers = trial.suggest_int('num_layers', 1, 3)
         dropout_rate = trial.suggest_float('dropout_rate', 0.1, 0.4)
         learning_rate = trial.suggest_float('learning_rate', 1e-5, 1e-2, log=True)
-        batch_size = trial.suggest_categorical('batch_size', [128, 256, 512])
+        batch_size = trial.suggest_categorical('batch_size', [128, 256])
         epochs = trial.suggest_int('epochs', 20, 60)
     
         # ----- Load data with this src_len -----
@@ -481,7 +481,7 @@ for i in l:
     study = optuna.create_study(direction='minimize',
                                 sampler=optuna.samplers.TPESampler(seed=42),
                                 pruner=optuna.pruners.MedianPruner(n_startup_trials=5))
-    study.optimize(objective, n_trials=1, timeout=7200)  # adjust trials/time as needed
+    study.optimize(objective, n_trials=30, timeout=7200)  # adjust trials/time as needed
 
     print("Best trial:")
     best_trial = study.best_trial
@@ -510,7 +510,7 @@ for i in l:
     learning_rate = bp['learning_rate']
     batch_size = bp['batch_size']
     epochs_final = bp['epochs']
-    src_len = bp['src_len'] # you might want to train longer now
+    src_len = SRC_LEN # you might want to train longer now
 
     X_train_best, y_train_best, X_valid_best, y_valid_best, X_test_best, y_test_best, scaler = load_data(
         df_diff, src_len, mul=TGT_LEN, normalize=True
@@ -536,7 +536,7 @@ for i in l:
     print("\nTraining final model on train+validation set ...")
     model_final.fit(
         X_train_final, y_train_final,
-        epochs=epochs_final,
+        epochs=200,
         batch_size=batch_size,
         verbose=1
     )
@@ -666,7 +666,7 @@ for i in l:
     test_start_date=test_start_date,
     model=model_final,
     scaler=scaler,
-    src_len=src_len           # this will override the default param
+    src_len=SRC_LEN          # this will override the default param
     )
 
     cerebro.broker.setcash(10000.0)
@@ -705,7 +705,17 @@ for i in l:
     plt.grid(True)
     plt.show()
 
+
+
+
     print(f"Final Portfolio Value: {cerebro.broker.getvalue():.2f}")
     cerebro.plot()
 
     print("teststart date", test_start_date)
+
+    model_final.save('saved_model', save_format='tf')
+
+    # Load in another script
+    import tensorflow as tf
+    loaded = tf.saved_model.load('saved_model')
+    predictions = loaded.signatures['serving_default'](tf.constant(input_array))
