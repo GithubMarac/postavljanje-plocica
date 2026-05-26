@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence, useMotionValue } from 'framer-motion';
 import { Ruler, Hammer, Droplets, X, ChevronLeft, ChevronRight } from 'lucide-react';
-
+import pozadina from './assets/pozadina.png';
 // --- PLACEHOLDER TOWN DATA (replace with your own images) ---
 const towns = [
   {
@@ -267,7 +267,7 @@ export default function App() {
               <div
                 className="absolute inset-0 opacity-20"
                 style={{
-                  backgroundImage: 'url(/pngtree-close.png)',
+                  backgroundImage: `url(${pozadina})`,
                   backgroundSize: 'cover',
                   backgroundPosition: 'center',
                   backgroundRepeat: 'repeat'
@@ -279,18 +279,9 @@ export default function App() {
               {/* Split content container */}
               <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-8 px-4">
                 {/* Left div – Profile picture */}
-                <motion.div
-                  initial={{ opacity: 0, x: -50 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.8 }}
-                  className="flex-shrink-0 w-48 h-48 md:w-64 md:h-64 lg:w-80 lg:h-80 rounded-full overflow-hidden border-4 border-amber-500 shadow-2xl"
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face"
-                    alt="Goran"
-                    className="w-full h-full object-cover"
-                  />
-                </motion.div>
+              <motion.div>
+
+              </motion.div>
 
                 {/* Right div – Text content */}
                 <motion.div
