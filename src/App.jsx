@@ -3,44 +3,46 @@ import { motion, AnimatePresence, useMotionValue } from 'framer-motion';
 import { Ruler, Hammer, Droplets, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import pozadina from './assets/pozadina.png';
 // --- PLACEHOLDER TOWN DATA (replace with your own images) ---
+
+
+import img1_1 from './assets/1-1.jpg';  // adjust extension to .png if needed
+import img1_2 from './assets/1-2.jpg';
+import img1_3 from './assets/1-3.jpg';
+import img1_4 from './assets/1-4.jpg';
+
+import img2_1 from './assets/2-1.jpg';
+import img2_2 from './assets/2-2.jpg';
+import img2_3 from './assets/2-3.jpg';
+import img2_4 from './assets/2-4.jpg';
+
+import img3_1 from './assets/3-1.jpg';
+import img3_2 from './assets/3-2.jpg';
+import img3_3 from './assets/3-3.jpg';
+import img3_4 from './assets/3-4.jpg';
+
+import img4_1 from './assets/4-1.jpg';
+import img4_2 from './assets/4-2.jpg';
+import img4_3 from './assets/4-3.jpg';
+import img4_4 from './assets/4-4.jpg';
+
+
+
 const towns = [
   {
     name: 'Zagreb',
-    images: [
-      'https://images.unsplash.com/photo-1600585152220-90363fe7e115?w=800&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1600573472550-8090b5e0745e?w=800&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=800&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1600566752447-f0fd8b3aed07?w=800&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1600047509358-9dc75507daeb?w=800&auto=format&fit=crop',
-    ],
+    images: [img1_1, img1_2, img1_3, img1_4],
   },
   {
     name: 'Split',
-    images: [
-      'https://images.unsplash.com/photo-1560185007-5f0bb1866cab?w=800&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1560185007-cde436f6a4d0?w=800&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1560184993-26c1f3e0bc1e?w=800&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1560184897-502f8e9c6a2f?w=800&auto=format&fit=crop',
-    ],
+    images: [img2_1, img2_2, img2_3, img2_4],
   },
   {
     name: 'Rijeka',
-    images: [
-      'https://images.unsplash.com/photo-1598928506311-c55e8b3b3b0e?w=800&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1598928506311-0f3f4b3b3b0e?w=800&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1598928506311-5f3f4b3b3b0e?w=800&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1598928506311-8b3b3b3b0e?w=800&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1598928506311-9b3b3b3b0e?w=800&auto=format&fit=crop',
-    ],
+    images: [img3_1, img3_2, img3_3, img3_4],
   },
   {
     name: 'Osijek',
-    images: [
-      'https://images.unsplash.com/photo-1580587771525-78b9b9b9b9b9?w=800&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1580587771525-78b9b9b9b9b9?w=800&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1580587771525-78b9b9b9b9b9?w=800&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1580587771525-78b9b9b9b9b9?w=800&auto=format&fit=crop',
-    ],
+    images: [img4_1, img4_2, img4_3, img4_4],
   },
 ];
 
@@ -265,14 +267,16 @@ export default function App() {
             >
               {/* Diploma background image */}
               <div
-                className="absolute inset-0 opacity-20"
-                style={{
-                  backgroundImage: `url(${pozadina})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  backgroundRepeat: 'repeat'
-                }}
-              />
+              className="absolute inset-0"
+              style={{
+                backgroundImage: `url(${pozadina})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'repeat',
+                maskImage: 'linear-gradient(to bottom, black 1%, transparent 80%)',
+                WebkitMaskImage: 'linear-gradient(to bottom, black 1%, transparent 80%)', // Safari support
+              }}
+            />
 
               
 
