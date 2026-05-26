@@ -25,6 +25,8 @@ import img4_2 from './assets/4-2.jpg';
 import img4_3 from './assets/4-3.jpg';
 import img4_4 from './assets/4-4.jpg';
 
+import diploma from './assets/diploma.jpg';
+
 
 
 const towns = [
@@ -294,7 +296,7 @@ export default function App() {
                   transition={{ duration: 0.8, delay: 0.2 }}
                   className="text-center md:text-left max-w-xl"
                 >
-                  <div className="grid grid-cols-3 md:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                   {[
                     { icon: <Ruler size={32} />, title: 'Preciznost', desc: 'Laserska nivelacija' },
                     { icon: <Hammer size={32} />, title: 'Kvaliteta', desc: 'Vrhunski materijali' },
@@ -320,7 +322,7 @@ export default function App() {
                     onClick={() => setIsDiplomaOpen(true)}
                   >
                     <img 
-                      src="../diploma.jpg" 
+                      src={diploma}
                       style={{ height: '350px', margin: 'auto', padding: '15px' }} 
                       alt="Moja diploma – kliknite za uvećanje"
                       className="rounded-lg shadow-lg hover:opacity-90 transition-opacity"
@@ -507,7 +509,7 @@ export default function App() {
 
                 {/* Enlarged diploma image */}
                 <img
-                  src="../diploma.jpg"
+                  src={diploma}
                   alt="Diploma uvećano"
                   className="max-h-[90vh] max-w-[90vw] object-contain rounded-lg shadow-2xl"
                   onClick={(e) => e.stopPropagation()}
