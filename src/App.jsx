@@ -265,7 +265,7 @@ export default function App() {
             {/* 1. O MENI (Hero) – Split layout */}
             <section
               data-section="0"
-              className="h-screen w-full snap-start relative flex items-center justify-center bg-slate-900 overflow-hidden"
+              className="w-full snap-start relative flex items-center justify-center bg-slate-900 overflow-hidden"
             >
               {/* Diploma background image */}
               <div
@@ -283,7 +283,7 @@ export default function App() {
               
 
               {/* Split content container */}
-              <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-8 px-4">
+              <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-8 px-4 pt-10">
                 {/* Left div – Profile picture */}
               <motion.div>
 
@@ -293,7 +293,7 @@ export default function App() {
                 <motion.div
                   initial={{ opacity: 0, x: 50 }}
                   whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.8, delay: 0.2 }}
+                  transition={{ duration: 1.5, delay: 0.4 }}
                   className="text-center md:text-left max-w-xl"
                 >
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -307,7 +307,7 @@ export default function App() {
                       initial={{ opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       transition={{ delay: idx * 0.2 }}
-                      className="bg-slate-800/80 backdrop-blur-sm p-6 rounded-2xl border border-slate-700"
+                      className="bg-slate-800/33 backdrop-blur-xsm p-2 rounded-2xl border border-slate-700"
                     >
                       <div className="text-amber-500 flex justify-center mb-3">{item.icon}</div>
                       <h3 className="text-lg font-bold mb-1">{item.title}</h3>
